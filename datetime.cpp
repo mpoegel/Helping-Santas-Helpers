@@ -5,6 +5,14 @@ const unsigned int DateTime::max_days_[12] = {31,28,31,30,31,30,31,31,30,31,30,
 // -----------------------------------------------------------------------------
 // CONSTRUCTORS
 // -----------------------------------------------------------------------------
+DateTime::DateTime() {
+	year_ = 2014;
+	month_ = 1;
+	day_ = 1;
+	hour_ = 0;
+	minute_ = 0;
+}
+
 DateTime::DateTime(unsigned int year, unsigned int month, unsigned int day,
 									 unsigned int hour, unsigned int minute) {
 	year_ = year;
@@ -87,7 +95,16 @@ void DateTime::tick() {
 // -----------------------------------------------------------------------------
 // OPERATOR OVERLOADS
 // -----------------------------------------------------------------------------
-bool DateTime::operator=(const DateTime& d2) {
+DateTime& DateTime::operator=(const DateTime& d2) {
+	year_ = d2.year_;
+	month_ = d2.month_;
+	day_ = d2.day_;
+	hour_ = d2.hour_;
+	minute_ = d2.minute_;
+	return *this;
+}
+
+bool DateTime::operator==(const DateTime& d2) {
 	return year_ == d2.year_ &&
 					month_ == d2.month_ &&
 					day_ == d2.day_ &&

@@ -17,6 +17,7 @@ private:
 
 public:
 	// CONSTRUCTORS
+	DateTime();
 	DateTime(unsigned int year, unsigned int month, unsigned int day,
 					 unsigned int hour, unsigned int minute);
 
@@ -29,7 +30,8 @@ public:
 	void tick();
 
 	// OVERLOADS
-	bool operator=(const DateTime& d2);
+	DateTime& operator=(const DateTime& d2);
+	bool operator==(const DateTime& d2);
 	bool operator<(const DateTime& d2);
 };
 
