@@ -10,6 +10,7 @@ class Toy {
 private:
 	unsigned int id_;
 	DateTime start_;
+	DateTime finish_;
 	unsigned int duration_;
 	Elf* assigned_elf_;
 
@@ -22,8 +23,12 @@ public:
 
 	// ACCESSORS
 	unsigned int getId() { return id_; }
+	unsigned int getDuration() { return duration_; }
+	const DateTime& getStartTime() { return start_; }
+	const DateTime& getFinishTime() { return finish_; }
 
 	// MODIFIERS
+	void setDuration(unsigned int minutes);
 
 	// OVERLOADS
 

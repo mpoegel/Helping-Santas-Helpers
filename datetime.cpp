@@ -2,6 +2,8 @@
 
 const unsigned int DateTime::max_days_[12] = {31,28,31,30,31,30,31,31,30,31,30,
 	31};
+const unsigned int DateTime::max_days_leap_[12] = {31,29,31,30,31,30,31,31,30,
+	31,30,31};
 // -----------------------------------------------------------------------------
 // CONSTRUCTORS
 // -----------------------------------------------------------------------------
@@ -35,6 +37,10 @@ DateTime::DateTime(unsigned int year, unsigned int month, unsigned int day,
 	}
 }
 
+DateTime::DateTime(const DateTime& dt) {
+	this->copy(dt);
+}
+
 // -----------------------------------------------------------------------------
 // ACCESSORS
 // -----------------------------------------------------------------------------
@@ -59,6 +65,10 @@ unsigned int DateTime::getJulianDay() {
 
 bool DateTime::isLeapYear() {
 	return year_ % 4 == 0 && !(year_ % 100 == 0 && year_ % 400 != 0);
+}
+
+bool DateTime::isSanctioned() {
+	return hour_ >= 9 && hour_ < 19;
 }
 
 // -----------------------------------------------------------------------------
@@ -92,6 +102,20 @@ void DateTime::tick() {
 	}
 }
 
+DateTime& DateTime::addMinutes(unsigned int min) {
+	minute_ += min;
+	normalize();
+	return *this;
+}
+
+void DateTime::copy(const DateTime& dt) {
+	year_ = dt.year_;
+	month_ = dt.month_;
+	day_ = dt.day_;
+	hour_ = dt.hour_;
+	minute_ = dt.minute_;
+}
+
 // -----------------------------------------------------------------------------
 // OPERATOR OVERLOADS
 // -----------------------------------------------------------------------------
@@ -120,4 +144,34 @@ bool DateTime::operator<(const DateTime& d2) {
 						hour_ < d2.hour_) ||
 					(year_ == d2.year_ && month_ == d2.month_ && day_ == d2.day_ &&
 						hour_ == d2.hour_ && minute_ < d2.minute_);
+}
+
+// -----------------------------------------------------------------------------
+// PRIVATE METHODS
+// -----------------------------------------------------------------------------
+void DateTime::normalize() {
+	while (minute_ > 59) {
+		hour_++;
+		minute_ -= 60;
+	}
+	while (hour_ > 23) {
+		day_++;
+		hour_ -= 24;
+	}
+	if (isLeapYear()) {
+		while (day_ > max_days_leap_[month_-1]) {
+			day_ -= max_days_leap_[month_-1];
+			month_++;
+		}
+	}
+	else {
+		while (day_ > max_days_[month_-1]) {
+			day_ -= max_days_[month_-1];
+			month_++;
+		}
+	}
+	while (month_ > 12) {
+		year_++;
+		month_ -= 12;
+	}
 }

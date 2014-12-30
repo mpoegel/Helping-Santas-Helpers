@@ -17,6 +17,7 @@ Toy::Toy(const DateTime& dt, unsigned int duration) {
 	toy_count_++;
 	start_ = dt;
 	duration_ = duration;
+	finish_ = DateTime(dt).addMinutes(duration);
 	assigned_elf_ = NULL;
 }
 
@@ -27,6 +28,10 @@ Toy::Toy(const DateTime& dt, unsigned int duration) {
 // -----------------------------------------------------------------------------
 // MODIFIERS
 // -----------------------------------------------------------------------------
+void Toy::setDuration(unsigned int minutes) {
+	duration_ = minutes;
+
+}
 
 // -----------------------------------------------------------------------------
 // OPERATOR OVERLOADS
