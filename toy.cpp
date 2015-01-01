@@ -30,9 +30,27 @@ Toy::Toy(const DateTime& dt, unsigned int duration) {
 // -----------------------------------------------------------------------------
 void Toy::setDuration(unsigned int minutes) {
 	duration_ = minutes;
+}
 
+bool Toy::startWork(DateTime now) {
+	finish_ = now.addMinutes(duration_);
+	return true;
+}
+
+bool Toy::assignElf(Elf* elf) {
+	assigned_elf_ = elf;
+	return true;
 }
 
 // -----------------------------------------------------------------------------
 // OPERATOR OVERLOADS
 // -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// HELPERS
+// -----------------------------------------------------------------------------
+ostream& operator<<(ostream& os, const Toy& t) {
+	os << "ID: " << t.getId() << " START: " << t.getStartTime() << " DURATION: "
+		<< t.getDuration();
+	return os;
+}

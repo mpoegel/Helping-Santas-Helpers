@@ -22,19 +22,17 @@ DateTime::DateTime(unsigned int year, unsigned int month, unsigned int day,
 	day_ = day;
 	hour_ = hour;
 	minute_ = minute;
-	// check the date input
-	if ((month == 2 && isLeapYear() && day > 29) ||
-			(month == 2 && !isLeapYear() &&  day > 28)) {
-		throw 0;
-	}
-	else if (month_ == 0 || month_ > 12 || day_ == 0 ||
-					 max_days_[month_-1] > day_) {
-		throw 0;
-	}
-	// check the time input
-	if (hour_ > 23 || minute_ > 60) {
-		throw 0;
-	}
+	validate();
+}
+
+DateTime::DateTime(const string& dtString) {
+	stringstream ss(dtString);
+	ss >> year_;
+	ss >> month_;
+	ss >> day_;
+	ss >> hour_;
+	ss >> minute_;
+	validate();
 }
 
 DateTime::DateTime(const DateTime& dt) {
@@ -44,12 +42,12 @@ DateTime::DateTime(const DateTime& dt) {
 // -----------------------------------------------------------------------------
 // ACCESSORS
 // -----------------------------------------------------------------------------
-void DateTime::printDateTime(ostream& out_str) {
+void DateTime::printDateTime(ostream& out_str) const {
 	out_str << year_ << " " << month_ << " " << day_ << " " << hour_
 		<< " " << minute_;
 }
 
-unsigned int DateTime::getJulianDay() {
+unsigned int DateTime::getJulianDay() const {
 	unsigned int jDay = 0;
 	for (unsigned int i=1; i<month_; i++) {
 		if (i==2 && isLeapYear()) {
@@ -63,11 +61,11 @@ unsigned int DateTime::getJulianDay() {
 	return jDay;
 }
 
-bool DateTime::isLeapYear() {
+bool DateTime::isLeapYear() const {
 	return year_ % 4 == 0 && !(year_ % 100 == 0 && year_ % 400 != 0);
 }
 
-bool DateTime::isSanctioned() {
+bool DateTime::isSanctioned() const {
 	return hour_ >= 9 && hour_ < 19;
 }
 
@@ -128,7 +126,7 @@ DateTime& DateTime::operator=(const DateTime& d2) {
 	return *this;
 }
 
-bool DateTime::operator==(const DateTime& d2) {
+bool DateTime::operator==(const DateTime& d2) const {
 	return year_ == d2.year_ &&
 					month_ == d2.month_ &&
 					day_ == d2.day_ &&
@@ -136,7 +134,7 @@ bool DateTime::operator==(const DateTime& d2) {
 					minute_ == d2.minute_;
 }
 
-bool DateTime::operator<(const DateTime& d2) {
+bool DateTime::operator<(const DateTime& d2) const {
 	return year_ < d2.year_ ||
 					(year_ == d2.year_ && month_ < d2.month_) ||
 					(year_ == d2.year_ && month_ == d2.month_ && day_ < d2.day_) ||
@@ -144,6 +142,10 @@ bool DateTime::operator<(const DateTime& d2) {
 						hour_ < d2.hour_) ||
 					(year_ == d2.year_ && month_ == d2.month_ && day_ == d2.day_ &&
 						hour_ == d2.hour_ && minute_ < d2.minute_);
+}
+
+bool DateTime::operator<=(const DateTime& d2) const {
+	return *this < d2 || *this == d2;
 }
 
 // -----------------------------------------------------------------------------
@@ -174,4 +176,26 @@ void DateTime::normalize() {
 		year_++;
 		month_ -= 12;
 	}
+}
+
+void DateTime::validate() {
+	// check the date input
+	if (month_ == 0 || month_ > 12 || day_ == 0 ||
+			(isLeapYear() && day_ > max_days_leap_[month_-1]) ||
+			(!isLeapYear() && day_ > max_days_[month_-1])) {
+		throw 0;
+	}
+	// check the time input
+	if (hour_ > 23 || minute_ > 60) {
+		throw 0;
+	}
+}
+
+// -----------------------------------------------------------------------------
+// HELPERS
+// -----------------------------------------------------------------------------
+ostream& operator<<(ostream& os, const DateTime& dt) {
+	os << dt.getYear() << " " << dt.getMonth() << " " << dt.getDay() << " " <<
+		dt.getHour() << " " << dt.getMinute();
+	return os;
 }

@@ -1,6 +1,8 @@
 #ifndef __elf_h_
 #define __elf_h_
 
+#include <cmath>
+
 #include "datetime.h"
 #include "toy.h"
 
@@ -9,7 +11,6 @@ class Toy;
 using namespace std;
 
 class Elf {
-	friend class Toy;
 private:
 	unsigned int id_;
 	unsigned int toys_completed_;
@@ -22,26 +23,30 @@ private:
 	// elf ID counter
 	static unsigned int elf_count_;
 
-	bool toyCompleted(const DateTime& finish_time);
-
 public:
 	// CONSTRUCTORS
 	Elf();
 
 	// ACCESSORS
-	unsigned int getId() { return id_; }
-	bool isWorking() { return is_working_; }
-	double getProductivity() { return productivity_; }
-	unsigned int getRestPeriod() { return rest_period_; }
+	unsigned int getId() const { return id_; }
+	bool isWorking() const { return is_working_; }
+	double getProductivity() const { return productivity_; }
+	unsigned int getRestPeriod() const { return rest_period_; }
+
+	unsigned int getElfCount() const { return elf_count_; }
 
 	// MODIFIERS
 	bool assignToy(Toy* t);
-	void incrementRest();
-	void decrementRest();
+	bool beginWork(const DateTime& now);
+	bool toyCompleted();
+	bool incrementRest();
+	bool decrementRest();
 
 	// OVERLOADS
 
 };
+
+ostream& operator<<(ostream& os, const Elf& elf);
 
 
 #endif
