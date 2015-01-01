@@ -39,6 +39,7 @@ public:
 	unsigned int getJulianDay() const;
 	bool isLeapYear() const;
 	bool isSanctioned() const;
+	unsigned int minutesSince(DateTime ref) const;
 
 	// MODIFIERS
 	void tick();

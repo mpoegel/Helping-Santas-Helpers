@@ -69,6 +69,15 @@ bool DateTime::isSanctioned() const {
 	return hour_ >= 9 && hour_ < 19;
 }
 
+unsigned int DateTime::minutesSince(DateTime ref) const {
+	unsigned int minutes = 0;
+	while (ref < *this) {
+		ref.tick();
+		minutes++;
+	}
+	return minutes;
+}
+
 // -----------------------------------------------------------------------------
 // MODIFIERS
 // -----------------------------------------------------------------------------
