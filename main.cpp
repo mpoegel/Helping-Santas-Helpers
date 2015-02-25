@@ -55,6 +55,8 @@ pair<DateTime,unsigned int> generateSolution(ifstream& in_str, ostream& out_str)
       // cout << "new toy: " << *t << endl;
     }
 
+    // cout << " ** New Toys Passed" << endl;
+
     // check if any elves are working overtime (during unsanctioned hours)
     if (!datetime.isSanctioned()) {
       // increment all working elves' rest period
@@ -63,6 +65,8 @@ pair<DateTime,unsigned int> generateSolution(ifstream& in_str, ostream& out_str)
         (*e_itr)->incrementRest();
       }
     }
+
+    // cout << " ** Sanctioned Check Passed" << endl;
 
     // check if any elves are resting during sanctioned hours
     if (datetime.isSanctioned()) {
@@ -74,9 +78,12 @@ pair<DateTime,unsigned int> generateSolution(ifstream& in_str, ostream& out_str)
         if ((*e_itr)->getRestPeriod() == 0) {
           idle_elves.push(*e_itr);
           resting_elves.erase(e_itr);
+          e_itr--;
         }
       }
     }
+
+    // cout << " ** Resting Check Passed" << endl;
 
     // check to see if any toys are finished being built
     for (t_itr = working_toys.begin(); t_itr != working_toys.end(); t_itr++) {
@@ -108,21 +115,24 @@ pair<DateTime,unsigned int> generateSolution(ifstream& in_str, ostream& out_str)
       }
     }
 
+    // cout << " ** Toy Completion Check Passed" << endl;
+
     // assign new toys to idle elves
     if (datetime.isSanctioned()) {
-      // cout << "toy Q size = " << toy_queue.size() << endl;
-      // cout << "# idle elves = " << idle_elves.size() << endl;
+      // cout << datetime << " # toy Q size = " << toy_queue.size() << endl;
+      // cout << datetime << " # idle elves = " << idle_elves.size() << endl;
       while (toy_queue.size() && toy_queue.front()->getStartTime() <= datetime) {
-        // check if we are at the elf limit
-        if (total_elves >= MAX_ELVES) {
-          break;
-        }
         // if there are no idle elves then hire a new recruit!
-        if (idle_elves.size() == 0) {
+        // but only if we are not are the max number of elves
+        if (total_elves < MAX_ELVES && idle_elves.size() == 0) {
           idle_elves.push(new Elf());
           total_elves++;
-          // cout << "new elf: " << *(idle_elves.top()) << endl;
+          // cout << datetime << " # new elf: " << *(idle_elves.top()) << endl;
         }
+        // if no one is available and more cannot be hired, then nothing more
+        //  to do
+        if (!idle_elves.size())
+          break;
         idle_elves.top()->assignToy(toy_queue.front());
         // start work immediately
         idle_elves.top()->beginWork(datetime);
@@ -135,8 +145,16 @@ pair<DateTime,unsigned int> generateSolution(ifstream& in_str, ostream& out_str)
       }
     }
 
+    // cout << " ** Assign Toys Passed" << endl;
+
     // always tick the clock
     datetime.tick();
+    // if (datetime.getHour() >= 10) break;
+    // cout << datetime << " ---- WToy: " << working_toys.size() << " ToyQ: " <<
+    //   toy_queue.size() << " IdleE: " << idle_elves.size() << " WorkE: " <<
+    //   working_elves.size() << " RestE: " << resting_elves.size() << endl;
+    // string garb;
+    // cin >> garb;
   } // END OUT-MOST WHILE LOOP
 
   // terminate all employment
